@@ -1,0 +1,113 @@
+@import './variables/color';
+@import './mixins/genericComponents';
+
+/*books*/
+@import './components/Book/bookComponent';
+@import './components/Book/newBook';
+
+
+/*loans*/
+@import './components/Loan/LoanComponent';
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial;
+    background-color: $softWhite;
+    overflow-x: hidden;
+}
+
+li, a {
+    list-style: none;
+    text-decoration: none;
+}
+
+.principalHeader {
+    border-bottom: 3px solid $principal;
+    padding: 5px;
+    min-width: 100%;
+    background-color: $principal;
+}
+
+.principalHeader > .logo {
+    margin-left: 10px;
+    color: $softWhite
+}
+
+.principalContainer {
+    padding: 0px 15px;
+}
+
+
+a:hover {  
+    text-decoration: underline;
+    color: $principal;
+}    
+button:focus {
+    outline:0;
+}
+
+button {
+    border-radius: 2px;
+    white-space: nowrap;
+    outline: none;
+}
+a {
+    color: $secondary;
+    font-weight: bold;
+    display: block;
+}
+
+.principalNavBar > ul{
+    height: 50px;
+    border: 0.5px solid $secondary;
+    border-radius: 5px;
+
+    @include navbar(row, space-around, center);
+}
+
+.formModal {
+    position: fixed;
+    z-index: 99999;
+    min-width: 25%;
+    min-height: 400px;
+    left: calc(50% - 25%);
+    right: calc(50% - 25%);
+    top: 0;
+    background-color: white;
+    
+    form {
+      display: flex;
+      flex-direction: column; 
+      @include formGroup;
+    }
+  
+    .close {
+        color: $exit;
+        font-weight: bold;
+        position: absolute;
+        margin: 5px;
+        padding: 5px;
+        right: 5px;
+        font-size: 30px;
+        cursor: pointer;
+    }
+  
+    button {
+      height: 50px;
+      color: $softWhite;
+      font-size: 25px;
+      background-color: $ternary;
+      cursor: pointer;
+      border: none;
+      border-radius: 0;
+      transition: ease-out 2s;
+    }
+  
+    button:hover {
+        opacity: 0.9;
+        transition: ease-in 1s;
+    }
+  
+  }
+  
+  

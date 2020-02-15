@@ -13,16 +13,6 @@ class BookController extends Controller
      */
     protected $bookModel;
 
-    const SERVER_ERROR_MESSAGE = <<<EOT
-    Ocorreu um erro. Por favor tente novamente mais tarde ou contate o Anderson Lucas Silva de Oliveira.
-    EOT;
-
-    const CLIENT_ERROR_MESSAGE = <<<EOT
-    Cheque se você inseriu todos os campos de forma correta.
-    EOT;
-
-    const HEADERS = ['Content-type'=> 'application/json;charset=utf-8'];
-
     const INPUT_FLTER = [
         'title', 'loan_amount', 
         'remaining_amount', 'total'
@@ -62,7 +52,7 @@ class BookController extends Controller
         try {
             $newBook = $request->only(self::INPUT_FLTER);
             $newBookQueryResult = $this->bookModel->create($newBook);
-            
+           
             // TODO: CRIAR UM VALIDADOR
             if (!$newBookQueryResult) {
                 return response()->json(self::CLIENT_ERROR_MESSAGE, 400);  

@@ -1,9 +1,9 @@
 <template>
     <div>
         <button @click="enterEditMode">Editar</button>
-        <div style="z-index: 1;" v-show="editMode" class="editModal">
-            <form action="#" style="position: fixed; width: 50%; left: 25%; right: 25%; background-color: white;" id="editForm">
-                <span class="close">&times;</span>
+        <div v-show="editMode" class="formModal">
+            <span class="close" @click="enterEditMode">&times;</span>
+            <form action="#">
                 <div class="feedBackPanel" id="feedBackPanel" @click="clearFeedBack">
                     <div v-show="hasFeedback">
                         <p>{{feedBack.content}}</p>
@@ -12,7 +12,7 @@
                 <div class="formGroup">
                     <label for="title">Título do exemplar</label>
                     <span class="tagRequired"></span>
-                    <input type="text" id="title" class="registerInput" v-model="book.title">
+                    <input type="text" id="title" class="registerInput" v-model="book.title" aria-selected="false">
                 </div>
                 <div class="formGroup">
                     <label for="loan_amount">Quantidade Emprestada</label>
@@ -26,7 +26,9 @@
                     <label for="total">Total de Exemplares</label>
                     <input type="text" id="total" class="registerInput" v-model="book.total">
                 </div>
-                <button type="button" @click="editBook">Salvar Edição</button>
+            
+                <button type="submit" @click="editBook">Salvar Edição</button>
+                
             </form>
         </div>
     </div>
@@ -34,6 +36,7 @@
 
 <script>
 import Axios from 'axios'
+import { validateBookData, parseBookData } from '../../helpers/functions.js';
 export default {
 
     props: {
@@ -54,6 +57,17 @@ export default {
         editBook() {
             const http = Axios;
             const url = `/api/book/edit/${this.book.id}`;
+    
+            const parsedBookData = parseBookData(this.book);
+            const validateMessage = validateBookData(parsedBookData);
+            
+            if (validateMessage != '') {
+                this.setFeedback(
+                    validateMessage, 'error'
+                );
+                return;
+            }
+        
             http.put(url, this.book)
             .then((response) => {
                 const feedBackType = response.status == 'OK' ? 'success' : 'error';
@@ -76,7 +90,6 @@ export default {
         
         enterEditMode() {
             this.editMode = !this.editMode;
-            this.setExitModalEvent();
         }
     },
 
@@ -87,11 +100,6 @@ export default {
     },
 
     watch: {
-        editMode() {
-            if (this.editMode) {
-                document.querySelector('body').style = 'background-color: #635f5f;'
-            }
-        }
     }
 }
 </script>

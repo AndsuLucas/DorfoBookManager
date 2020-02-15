@@ -10,6 +10,11 @@ $router->group(['prefix' => 'api'], function() use ($router) {
         $router->delete('delete/{id}', 'Book\BookController@deleteBook');
     });
 
+    $router->group(['prefix' => 'loan'], function() use ($router){
+        $router->get('', 'Loan\LoanController@getLoans');
+        $router->post('newLoan/{bookId}', ['middleware' => 'newLoanMiddleware'], 'Loan\LoanController@newLoan' );
+    });
+
 });
 
 

@@ -24,8 +24,11 @@ export default {
 
             http.delete(url).then((response) => {
                 alert(response.data);
+                window.location.reload();
             })
-        }
+        },
+
+
     }
 }
 </script>

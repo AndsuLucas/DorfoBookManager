@@ -1,0 +1,54 @@
+
+.bookListPrincipalContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: auto;
+    border: 0.5px solid $principal;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.optionsLinkGroup {
+    border: 0.5px solid $secondary;
+    margin-bottom: 20px;
+    border-radius: 5px;
+
+    nav > ul {
+        @include navbar(row, flex-start, center);
+    }
+
+    nav > ul > li {
+        margin: 5px;
+    }
+}
+
+.searchForm {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    form  {
+        border: 0.5px solid $secondary;
+        border-radius: 5px;
+        padding: 10px;
+    }
+}
+
+.showBooksTable {
+    tr, td, & {
+        border: 0.5px solid $secondary;
+        border-collapse: collapse;
+    }
+
+    td, th {
+        text-align: center;
+        padding: 10px;
+    }
+
+    thead {
+        background-color: $ternary;
+        color: $softWhite;
+    }
+}

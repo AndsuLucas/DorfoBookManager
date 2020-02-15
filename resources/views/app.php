@@ -9,14 +9,17 @@
     <link rel="stylesheet" href="dist/app.css" />
 </head>
 <body>
-    <header>
-        <h1>DorfoBookManager</h1>
+    <header class="principalHeader">
+        <h1 class="logo">DorfoBookManager</h1>
     </header>
-    <main  id="main-app" class="mainContainer">
-        <nav>
+    <main  id="main-app" class="principalContainer">
+        <nav class="principalNavBar">
             <ul>
                 <li>
-                    <router-link to="/book">Book</router-link>
+                    <router-link to="/book">Livros</router-link>
+                </li>
+                <li>
+                    <router-link to="/loan">Empréstimos</router-link>
                 </li>
             </ul>
         </nav>

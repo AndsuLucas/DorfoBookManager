@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 13);
+/******/ 	return __webpack_require__(__webpack_require__.s = 14);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -418,6 +418,121 @@ module.exports = {
 /* 1 */
 /***/ (function(module, exports) {
 
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(26);
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
 var g;
 
 // This works in non-strict mode
@@ -442,13 +557,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(25);
-
-/***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -638,115 +747,6 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
-
-/***/ }),
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -862,7 +862,7 @@ module.exports = function isCancel(value) {
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(0);
-var normalizeHeaderName = __webpack_require__(30);
+var normalizeHeaderName = __webpack_require__(31);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -957,7 +957,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 9 */
@@ -967,11 +967,11 @@ module.exports = defaults;
 
 
 var utils = __webpack_require__(0);
-var settle = __webpack_require__(31);
+var settle = __webpack_require__(32);
 var buildURL = __webpack_require__(6);
-var buildFullPath = __webpack_require__(33);
-var parseHeaders = __webpack_require__(36);
-var isURLSameOrigin = __webpack_require__(37);
+var buildFullPath = __webpack_require__(34);
+var parseHeaders = __webpack_require__(37);
+var isURLSameOrigin = __webpack_require__(38);
 var createError = __webpack_require__(10);
 
 module.exports = function xhrAdapter(config) {
@@ -1069,7 +1069,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(38);
+      var cookies = __webpack_require__(39);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath)) && config.xsrfCookieName ?
@@ -1153,7 +1153,7 @@ module.exports = function xhrAdapter(config) {
 "use strict";
 
 
-var enhanceError = __webpack_require__(32);
+var enhanceError = __webpack_require__(33);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -1279,55 +1279,110 @@ module.exports = Cancel;
 
 /***/ }),
 /* 13 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-__webpack_require__(14);
-module.exports = __webpack_require__(45);
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return validateBookData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return parseBookData; });
+/* unused harmony export removeCachedBook */
+var validateBookData = function validateBookData(book) {
+    var loan_amount = book.loan_amount;
+    var remaining_amount = book.remaining_amount;
+    var total = book.total;
+    var title = book.title;
 
+    if (loan_amount < 0 || total < 0 || remaining_amount < 0) {
+        return 'Atente-se: Os valores não podem ser menores que 0.';
+    }
+
+    if (total == 0) {
+        return 'Atente-se: O total não pode ser igual a 0';
+    }
+
+    if (loan_amount > total) {
+        return 'Atente-se: A quantidade emprestada não pode ser maior que o total.';
+    }
+
+    if (remaining_amount > total) {
+        return 'Atente-se: A quantidade restante não pode ser maior que o total.';
+    }
+
+    var isEmptyTotal = total.toString().trim().length == 0;
+
+    if (isEmptyTotal) {
+        return 'Atente-se: O total deve ser preenchido.';
+    }
+
+    var isEmptyTitle = title.toString().trim().length == 0;
+
+    if (isEmptyTitle) {
+        return 'Atente-se: O título deve ser preeenchido.';
+    }
+
+    return '';
+};
+
+var parseBookData = function parseBookData(book) {
+    book.loan_amount = isNaN(book.loan_amount) ? 0 : parseInt(book.loan_amount);
+    book.remaining_amount = isNaN(book.remaining_amount) ? 0 : parseInt(book.remaining_amount);
+    book.total = book.total == undefined || book.total <= 0 ? 1 : parseInt(book.total);
+    book.title = book.title == undefined ? '' : book.title;
+    book.remaining_amount = book.total - book.loan_amount;
+    return book;
+};
+
+var removeCachedBook = function removeCachedBook(bookId, callback) {};
 
 /***/ }),
 /* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(15);
+module.exports = __webpack_require__(52);
+
+
+/***/ }),
+/* 15 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_Book_BookComponent_vue__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_Book_BookComponent_vue__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_Book_BookComponent_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__components_Book_BookComponent_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_axios__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Loan_LoanComponent_vue__ = __webpack_require__(57);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Loan_LoanComponent_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__components_Loan_LoanComponent_vue__);
 
 
 
 
 window.addEventListener('load', function () {
-
     __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]);
 
     var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
         mode: 'history',
         base: '/',
-        routes: [{ path: '/book', component: __WEBPACK_IMPORTED_MODULE_2__components_Book_BookComponent_vue___default.a }]
+        routes: [{ path: '/book', component: __WEBPACK_IMPORTED_MODULE_2__components_Book_BookComponent_vue___default.a }, { path: '/loan', component: __WEBPACK_IMPORTED_MODULE_3__components_Loan_LoanComponent_vue___default.a }]
     });
 
     new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({ router: router }).$mount('#main-app');
 });
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 if (false) {
   module.exports = require('./vue.common.prod.js')
 } else {
-  module.exports = __webpack_require__(16)
+  module.exports = __webpack_require__(17)
 }
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13291,10 +13346,10 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(17).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(18).setImmediate))
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -13350,7 +13405,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(18);
+__webpack_require__(19);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -13361,10 +13416,10 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
                          (typeof global !== "undefined" && global.clearImmediate) ||
                          (this && this.clearImmediate);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -13554,10 +13609,10 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(3)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(4)))
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -16478,15 +16533,15 @@ if (inBrowser && window.Vue) {
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(21)
+var __vue_script__ = __webpack_require__(22)
 /* template */
-var __vue_template__ = __webpack_require__(44)
+var __vue_template__ = __webpack_require__(51)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -16525,25 +16580,32 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__NewBook_vue__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__NewBook_vue__ = __webpack_require__(42);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__NewBook_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__NewBook_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__EditBook_vue__ = __webpack_require__(50);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__EditBook_vue__ = __webpack_require__(45);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__EditBook_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__EditBook_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__DeleteBook_vue__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__DeleteBook_vue__ = __webpack_require__(48);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__DeleteBook_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__DeleteBook_vue__);
 
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -16621,15 +16683,22 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                         switch (_context.prev = _context.next) {
                             case 0:
                                 http = __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get('/api/book');
-                                _context.next = 3;
+
+
+                                if (localStorage.getItem('books') != undefined) {
+                                    this.books = JSON.parse(localStorage.getItem('books'));
+                                }
+
+                                _context.next = 4;
                                 return http.then(function (response) {
+                                    localStorage.setItem('books', JSON.stringify(response.data));
                                     return response.data;
                                 });
 
-                            case 3:
+                            case 4:
                                 this.books = _context.sent;
 
-                            case 4:
+                            case 5:
                             case 'end':
                                 return _context.stop();
                         }
@@ -16642,17 +16711,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
             }
 
             return getBooks;
-        }(),
-        toggleRegisterMode: function toggleRegisterMode() {
-            this.newBookMode = !this.newBookMode;
-        }
-    },
-
-    computed: {
-        newBookTextLink: function newBookTextLink() {
-            var textLink = this.newBookMode ? "Esconder Formulário" : "Registrar novo livro";
-            return textLink;
-        }
+        }()
     },
 
     mounted: function mounted() {
@@ -16661,14 +16720,14 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 });
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(23);
+module.exports = __webpack_require__(24);
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16693,7 +16752,7 @@ var oldRuntime = hadRuntime && g.regeneratorRuntime;
 // Force reevalutation of runtime.js.
 g.regeneratorRuntime = undefined;
 
-module.exports = __webpack_require__(24);
+module.exports = __webpack_require__(25);
 
 if (hadRuntime) {
   // Restore the original runtime.
@@ -16709,7 +16768,7 @@ if (hadRuntime) {
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports) {
 
 /**
@@ -17442,7 +17501,7 @@ if (hadRuntime) {
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17450,7 +17509,7 @@ if (hadRuntime) {
 
 var utils = __webpack_require__(0);
 var bind = __webpack_require__(5);
-var Axios = __webpack_require__(26);
+var Axios = __webpack_require__(27);
 var mergeConfig = __webpack_require__(11);
 var defaults = __webpack_require__(8);
 
@@ -17486,14 +17545,14 @@ axios.create = function create(instanceConfig) {
 
 // Expose Cancel & CancelToken
 axios.Cancel = __webpack_require__(12);
-axios.CancelToken = __webpack_require__(39);
+axios.CancelToken = __webpack_require__(40);
 axios.isCancel = __webpack_require__(7);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(40);
+axios.spread = __webpack_require__(41);
 
 module.exports = axios;
 
@@ -17502,7 +17561,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17510,8 +17569,8 @@ module.exports.default = axios;
 
 var utils = __webpack_require__(0);
 var buildURL = __webpack_require__(6);
-var InterceptorManager = __webpack_require__(27);
-var dispatchRequest = __webpack_require__(28);
+var InterceptorManager = __webpack_require__(28);
+var dispatchRequest = __webpack_require__(29);
 var mergeConfig = __webpack_require__(11);
 
 /**
@@ -17603,7 +17662,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17662,14 +17721,14 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(0);
-var transformData = __webpack_require__(29);
+var transformData = __webpack_require__(30);
 var isCancel = __webpack_require__(7);
 var defaults = __webpack_require__(8);
 
@@ -17748,7 +17807,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17775,7 +17834,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17794,7 +17853,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17826,7 +17885,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17875,14 +17934,14 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var isAbsoluteURL = __webpack_require__(34);
-var combineURLs = __webpack_require__(35);
+var isAbsoluteURL = __webpack_require__(35);
+var combineURLs = __webpack_require__(36);
 
 /**
  * Creates a new URL by combining the baseURL with the requestedURL,
@@ -17902,7 +17961,7 @@ module.exports = function buildFullPath(baseURL, requestedURL) {
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17923,7 +17982,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17944,7 +18003,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18004,7 +18063,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18079,7 +18138,7 @@ module.exports = (
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18139,7 +18198,7 @@ module.exports = (
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18203,7 +18262,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18237,15 +18296,15 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(42)
+var __vue_script__ = __webpack_require__(43)
 /* template */
-var __vue_template__ = __webpack_require__(43)
+var __vue_template__ = __webpack_require__(44)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -18284,13 +18343,14 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__ = __webpack_require__(13);
 //
 //
 //
@@ -18318,12 +18378,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
             newBookData: {},
+            registerMode: false,
             feedBack: {
                 type: "",
                 content: ""
@@ -18336,11 +18404,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         newBook: function newBook() {
             var _this = this;
 
-            // TODO: validação aqui
+            var parsedBookData = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["a" /* parseBookData */])(this.newBookData);
+            var validateMessage = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["b" /* validateBookData */])(parsedBookData);
+
+            if (validateMessage != '') {
+                this.setFeedback(validateMessage, 'error');
+                return;
+            }
+
             var http = __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post('/api/book/new', this.newBookData);
             http.then(function (response) {
                 var feedBackType = response.status == 'OK' ? 'success' : 'error';
                 var feedBackMessage = response.data;
+
+                if (feedBackType == 'success') {
+                    localStorage.removeItem('books');
+                }
+
                 _this.setFeedback(feedBackMessage, feedBackType);
             });
         },
@@ -18351,6 +18431,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         clearFeedBack: function clearFeedBack() {
             this.feedBack.type = "";
             this.feedBack.content = "";
+        },
+        toggleRegister: function toggleRegister() {
+            this.registerMode = !this.registerMode;
         }
     },
 
@@ -18362,173 +18445,216 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "form",
-    { staticClass: "newBookForm", attrs: { action: "#", id: "new_book" } },
-    [
-      _c(
-        "div",
-        {
-          staticClass: "feedBackPanel",
-          attrs: { id: "feedBackPanel" },
-          on: { click: _vm.clearFeedBack }
-        },
-        [
-          _c(
-            "div",
-            {
-              directives: [
-                {
-                  name: "show",
-                  rawName: "v-show",
-                  value: _vm.hasFeedback,
-                  expression: "hasFeedback"
+  return _c("div", [
+    _c("a", { attrs: { href: "#" }, on: { click: _vm.toggleRegister } }, [
+      _vm._v("Registrar novo livro")
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.registerMode,
+            expression: "registerMode"
+          }
+        ],
+        staticClass: "formModal"
+      },
+      [
+        _c(
+          "span",
+          { staticClass: "close", on: { click: _vm.toggleRegister } },
+          [_vm._v("×")]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "feedBackPanel",
+            staticStyle: { "max-width": "80%" },
+            attrs: { id: "feedBackPanel" },
+            on: { click: _vm.clearFeedBack }
+          },
+          [
+            _c(
+              "div",
+              {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.hasFeedback,
+                    expression: "hasFeedback"
+                  }
+                ]
+              },
+              [_c("p", [_vm._v(_vm._s(_vm.feedBack.content))])]
+            )
+          ]
+        ),
+        _vm._v(" "),
+        _c(
+          "form",
+          {
+            staticClass: "newBookForm",
+            attrs: { action: "#", id: "new_book" }
+          },
+          [
+            _c("div", { staticClass: "formGroup" }, [
+              _c("label", { attrs: { for: "title" } }, [
+                _vm._v("Título do exemplar")
+              ]),
+              _vm._v(" "),
+              _c("span", { staticClass: "tagRequired" }),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.newBookData.title,
+                    expression: "newBookData.title"
+                  }
+                ],
+                staticClass: "registerInput",
+                attrs: { type: "text", id: "title" },
+                domProps: { value: _vm.newBookData.title },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(_vm.newBookData, "title", $event.target.value)
+                  }
                 }
-              ]
-            },
-            [_c("p", [_vm._v(_vm._s(_vm.feedBack.content))])]
-          )
-        ]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "formGroup" }, [
-        _c("label", { attrs: { for: "title" } }, [
-          _vm._v("Título do exemplar")
-        ]),
-        _vm._v(" "),
-        _c("span", { staticClass: "tagRequired" }),
-        _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.newBookData.title,
-              expression: "newBookData.title"
-            }
-          ],
-          staticClass: "registerInput",
-          attrs: { type: "text", id: "title" },
-          domProps: { value: _vm.newBookData.title },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.$set(_vm.newBookData, "title", $event.target.value)
-            }
-          }
-        })
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "formGroup" }, [
-        _c("label", { attrs: { for: "loan_amount" } }, [
-          _vm._v("Quantidade Emprestada")
-        ]),
-        _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.newBookData.loan_amount,
-              expression: "newBookData.loan_amount"
-            }
-          ],
-          staticClass: "registerInput",
-          attrs: {
-            type: "number",
-            id: "loan_amount",
-            min: "0",
-            max: _vm.newBookData.total
-          },
-          domProps: { value: _vm.newBookData.loan_amount },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.$set(_vm.newBookData, "loan_amount", $event.target.value)
-            }
-          }
-        })
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "formGroup" }, [
-        _c("label", { attrs: { for: "remaining_amount" } }, [
-          _vm._v("Quantidade Restante")
-        ]),
-        _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.newBookData.remaining_amount,
-              expression: "newBookData.remaining_amount"
-            }
-          ],
-          staticClass: "registerInput",
-          attrs: {
-            type: "number",
-            id: "remaining_amount",
-            min: "0",
-            max: _vm.newBookData.total
-          },
-          domProps: { value: _vm.newBookData.remaining_amount },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.$set(_vm.newBookData, "remaining_amount", $event.target.value)
-            }
-          }
-        })
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "formGroup" }, [
-        _c("label", { attrs: { for: "total" } }, [
-          _vm._v("Total de Exemplares")
-        ]),
-        _vm._v(" "),
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.newBookData.total,
-              expression: "newBookData.total"
-            }
-          ],
-          staticClass: "registerInput",
-          attrs: { type: "text", id: "total" },
-          domProps: { value: _vm.newBookData.total },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.$set(_vm.newBookData, "total", $event.target.value)
-            }
-          }
-        })
-      ]),
-      _vm._v(" "),
-      _c(
-        "button",
-        { attrs: { id: "sendButton" }, on: { click: _vm.newBook } },
-        [_vm._v("Registrar")]
-      )
-    ]
-  )
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "formGroup" }, [
+              _c("label", { attrs: { for: "loan_amount" } }, [
+                _vm._v("Quantidade Emprestada")
+              ]),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.newBookData.loan_amount,
+                    expression: "newBookData.loan_amount"
+                  }
+                ],
+                staticClass: "registerInput",
+                attrs: {
+                  type: "number",
+                  id: "loan_amount",
+                  min: "0",
+                  max: _vm.newBookData.total
+                },
+                domProps: { value: _vm.newBookData.loan_amount },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(
+                      _vm.newBookData,
+                      "loan_amount",
+                      $event.target.value
+                    )
+                  }
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "formGroup" }, [
+              _c("label", { attrs: { for: "remaining_amount" } }, [
+                _vm._v("Quantidade Restante")
+              ]),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.newBookData.remaining_amount,
+                    expression: "newBookData.remaining_amount"
+                  }
+                ],
+                staticClass: "registerInput",
+                attrs: {
+                  type: "number",
+                  id: "remaining_amount",
+                  min: "0",
+                  max: _vm.newBookData.total
+                },
+                domProps: { value: _vm.newBookData.remaining_amount },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(
+                      _vm.newBookData,
+                      "remaining_amount",
+                      $event.target.value
+                    )
+                  }
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "formGroup" }, [
+              _c("label", { attrs: { for: "total" } }, [
+                _vm._v("Total de Exemplares")
+              ]),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.newBookData.total,
+                    expression: "newBookData.total"
+                  }
+                ],
+                staticClass: "registerInput",
+                attrs: { type: "number", id: "total", min: "0" },
+                domProps: { value: _vm.newBookData.total },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(_vm.newBookData, "total", $event.target.value)
+                  }
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                attrs: { id: "sendButton", type: "submit" },
+                on: { click: _vm.newBook }
+              },
+              [_vm._v("Registrar")]
+            )
+          ]
+        )
+      ]
+    )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -18541,145 +18667,15 @@ if (false) {
 }
 
 /***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("section", { staticClass: "bookListPrincipalContainer" }, [
-    _c("div", { staticClass: "optionsLinkGroup" }, [
-      _vm._m(0),
-      _vm._v(" "),
-      _c("nav", [
-        _c("ul", [
-          _c("li", [
-            _c(
-              "a",
-              {
-                attrs: { href: "#" },
-                domProps: { textContent: _vm._s(_vm.newBookTextLink) },
-                on: { click: _vm.toggleRegisterMode }
-              },
-              [_vm._v("tes")]
-            )
-          ])
-        ])
-      ])
-    ]),
-    _vm._v(" "),
-    _c(
-      "div",
-      {
-        directives: [
-          {
-            name: "show",
-            rawName: "v-show",
-            value: _vm.newBookMode,
-            expression: "newBookMode"
-          }
-        ],
-        staticClass: "newBookContainer"
-      },
-      [_c("new-book")],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "table",
-      { staticClass: "showBooksTable" },
-      [
-        _vm._m(1),
-        _vm._v(" "),
-        _vm._l(_vm.books, function(book) {
-          return _c("tr", { key: book.id }, [
-            _c("th", [_vm._v(_vm._s(book.id))]),
-            _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(book.title))]),
-            _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(book.loan_amount))]),
-            _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(book.remaining_amount))]),
-            _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(book.total))]),
-            _vm._v(" "),
-            _c("td", [_c("editBook", { attrs: { book: book } })], 1),
-            _vm._v(" "),
-            _c("td", [_c("deleteBook", { attrs: { bookId: book.id } })], 1)
-          ])
-        })
-      ],
-      2
-    )
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", [
-      _c("label", { attrs: { for: "book-search" } }, [_vm._v("Buscar Livro")]),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "search",
-        attrs: { type: "text", id: "book-search" }
-      }),
-      _vm._v(" "),
-      _c("button", { staticClass: "sendButton" }, [_vm._v("Buscar")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("td", [_vm._v("Id")]),
-      _vm._v(" "),
-      _c("td", [_vm._v("Título")]),
-      _vm._v(" "),
-      _c("td", [_vm._v("Quantidade Emprestada")]),
-      _vm._v(" "),
-      _c("td", [_vm._v("Quantidade Restante")]),
-      _vm._v(" "),
-      _c("td", [_vm._v("Total de Exemplares")]),
-      _vm._v(" "),
-      _c("td", { attrs: { colspan: "2" } }, [
-        _vm._v("\n                Ações\n            ")
-      ])
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-e3fd240e", module.exports)
-  }
-}
-
-/***/ }),
 /* 45 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 46 */,
-/* 47 */,
-/* 48 */,
-/* 49 */,
-/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(51)
+var __vue_script__ = __webpack_require__(46)
 /* template */
-var __vue_template__ = __webpack_require__(52)
+var __vue_template__ = __webpack_require__(47)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -18718,13 +18714,14 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 51 */
+/* 46 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__ = __webpack_require__(13);
 //
 //
 //
@@ -18759,6 +18756,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -18783,7 +18783,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this = this;
 
             var http = __WEBPACK_IMPORTED_MODULE_0_axios___default.a;
-            var url = "/api/book/edit/" + this.book.id;
+            var url = '/api/book/edit/' + this.book.id;
+
+            var parsedBookData = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["a" /* parseBookData */])(this.book);
+            var validateMessage = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["b" /* validateBookData */])(parsedBookData);
+
+            if (validateMessage != '') {
+                this.setFeedback(validateMessage, 'error');
+                return;
+            }
+
             http.put(url, this.book).then(function (response) {
                 var feedBackType = response.status == 'OK' ? 'success' : 'error';
                 var feedBackMessage = response.data;
@@ -18800,7 +18809,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         enterEditMode: function enterEditMode() {
             this.editMode = !this.editMode;
-            this.setExitModalEvent();
         }
     },
 
@@ -18810,17 +18818,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
 
-    watch: {
-        editMode: function editMode() {
-            if (this.editMode) {
-                document.querySelector('body').style = 'background-color: #635f5f;';
-            }
-        }
-    }
+    watch: {}
 });
 
 /***/ }),
-/* 52 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -18841,181 +18843,169 @@ var render = function() {
             expression: "editMode"
           }
         ],
-        staticClass: "editModal",
-        staticStyle: { "z-index": "1" }
+        staticClass: "formModal"
       },
       [
-        _c(
-          "form",
-          {
-            staticStyle: {
-              position: "fixed",
-              width: "50%",
-              left: "25%",
-              right: "25%",
-              "background-color": "white"
+        _c("span", { staticClass: "close", on: { click: _vm.enterEditMode } }, [
+          _vm._v("×")
+        ]),
+        _vm._v(" "),
+        _c("form", { attrs: { action: "#" } }, [
+          _c(
+            "div",
+            {
+              staticClass: "feedBackPanel",
+              attrs: { id: "feedBackPanel" },
+              on: { click: _vm.clearFeedBack }
             },
-            attrs: { action: "#", id: "editForm" }
-          },
-          [
-            _c("span", { staticClass: "close" }, [_vm._v("×")]),
+            [
+              _c(
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.hasFeedback,
+                      expression: "hasFeedback"
+                    }
+                  ]
+                },
+                [_c("p", [_vm._v(_vm._s(_vm.feedBack.content))])]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "formGroup" }, [
+            _c("label", { attrs: { for: "title" } }, [
+              _vm._v("Título do exemplar")
+            ]),
             _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass: "feedBackPanel",
-                attrs: { id: "feedBackPanel" },
-                on: { click: _vm.clearFeedBack }
+            _c("span", { staticClass: "tagRequired" }),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.book.title,
+                  expression: "book.title"
+                }
+              ],
+              staticClass: "registerInput",
+              attrs: { type: "text", id: "title", "aria-selected": "false" },
+              domProps: { value: _vm.book.title },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.book, "title", $event.target.value)
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "formGroup" }, [
+            _c("label", { attrs: { for: "loan_amount" } }, [
+              _vm._v("Quantidade Emprestada")
+            ]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.book.loan_amount,
+                  expression: "book.loan_amount"
+                }
+              ],
+              staticClass: "registerInput",
+              attrs: {
+                type: "number",
+                id: "loan_amount",
+                min: "0",
+                max: _vm.book.total
               },
-              [
-                _c(
-                  "div",
-                  {
-                    directives: [
-                      {
-                        name: "show",
-                        rawName: "v-show",
-                        value: _vm.hasFeedback,
-                        expression: "hasFeedback"
-                      }
-                    ]
-                  },
-                  [_c("p", [_vm._v(_vm._s(_vm.feedBack.content))])]
-                )
-              ]
-            ),
-            _vm._v(" "),
-            _c("div", { staticClass: "formGroup" }, [
-              _c("label", { attrs: { for: "title" } }, [
-                _vm._v("Título do exemplar")
-              ]),
-              _vm._v(" "),
-              _c("span", { staticClass: "tagRequired" }),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.book.title,
-                    expression: "book.title"
+              domProps: { value: _vm.book.loan_amount },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
                   }
-                ],
-                staticClass: "registerInput",
-                attrs: { type: "text", id: "title" },
-                domProps: { value: _vm.book.title },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.book, "title", $event.target.value)
-                  }
+                  _vm.$set(_vm.book, "loan_amount", $event.target.value)
                 }
-              })
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "formGroup" }, [
+            _c("label", { attrs: { for: "remaining_amount" } }, [
+              _vm._v("Quantidade Restante")
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "formGroup" }, [
-              _c("label", { attrs: { for: "loan_amount" } }, [
-                _vm._v("Quantidade Emprestada")
-              ]),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.book.loan_amount,
-                    expression: "book.loan_amount"
-                  }
-                ],
-                staticClass: "registerInput",
-                attrs: {
-                  type: "number",
-                  id: "loan_amount",
-                  min: "0",
-                  max: _vm.book.total
-                },
-                domProps: { value: _vm.book.loan_amount },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.book, "loan_amount", $event.target.value)
-                  }
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.book.remaining_amount,
+                  expression: "book.remaining_amount"
                 }
-              })
+              ],
+              staticClass: "registerInput",
+              attrs: {
+                type: "number",
+                id: "remaining_amount",
+                min: "0",
+                max: _vm.book.total
+              },
+              domProps: { value: _vm.book.remaining_amount },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.book, "remaining_amount", $event.target.value)
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "formGroup" }, [
+            _c("label", { attrs: { for: "total" } }, [
+              _vm._v("Total de Exemplares")
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "formGroup" }, [
-              _c("label", { attrs: { for: "remaining_amount" } }, [
-                _vm._v("Quantidade Restante")
-              ]),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.book.remaining_amount,
-                    expression: "book.remaining_amount"
-                  }
-                ],
-                staticClass: "registerInput",
-                attrs: {
-                  type: "number",
-                  id: "remaining_amount",
-                  min: "0",
-                  max: _vm.book.total
-                },
-                domProps: { value: _vm.book.remaining_amount },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.book, "remaining_amount", $event.target.value)
-                  }
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.book.total,
+                  expression: "book.total"
                 }
-              })
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "formGroup" }, [
-              _c("label", { attrs: { for: "total" } }, [
-                _vm._v("Total de Exemplares")
-              ]),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.book.total,
-                    expression: "book.total"
+              ],
+              staticClass: "registerInput",
+              attrs: { type: "text", id: "total" },
+              domProps: { value: _vm.book.total },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
                   }
-                ],
-                staticClass: "registerInput",
-                attrs: { type: "text", id: "total" },
-                domProps: { value: _vm.book.total },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.book, "total", $event.target.value)
-                  }
+                  _vm.$set(_vm.book, "total", $event.target.value)
                 }
-              })
-            ]),
-            _vm._v(" "),
-            _c(
-              "button",
-              { attrs: { type: "button" }, on: { click: _vm.editBook } },
-              [_vm._v("Salvar Edição")]
-            )
-          ]
-        )
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c(
+            "button",
+            { attrs: { type: "submit" }, on: { click: _vm.editBook } },
+            [_vm._v("Salvar Edição")]
+          )
+        ])
       ]
     )
   ])
@@ -19031,15 +19021,15 @@ if (false) {
 }
 
 /***/ }),
-/* 53 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(54)
+var __vue_script__ = __webpack_require__(49)
 /* template */
-var __vue_template__ = __webpack_require__(55)
+var __vue_template__ = __webpack_require__(50)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -19078,7 +19068,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 54 */
+/* 49 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19111,13 +19101,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             http.delete(url).then(function (response) {
                 alert(response.data);
+                window.location.reload();
             });
         }
     }
 });
 
 /***/ }),
-/* 55 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -19137,6 +19128,365 @@ if (false) {
     require("vue-hot-reload-api")      .rerender("data-v-283b7d9f", module.exports)
   }
 }
+
+/***/ }),
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("section", { staticClass: "bookListPrincipalContainer" }, [
+    _c("div", { staticClass: "optionsLinkGroup" }, [
+      _c("nav", [
+        _c("ul", [_c("li", [_c("new-book")], 1), _vm._v(" "), _vm._m(0)])
+      ])
+    ]),
+    _vm._v(" "),
+    _vm._m(1),
+    _vm._v(" "),
+    _c("table", { staticClass: "showBooksTable" }, [
+      _vm._m(2),
+      _vm._v(" "),
+      _c(
+        "tbody",
+        _vm._l(_vm.books, function(book) {
+          return _c("tr", { key: book.id }, [
+            _c("th", [_vm._v(_vm._s(book.id))]),
+            _vm._v(" "),
+            _c("td", [_vm._v(_vm._s(book.title))]),
+            _vm._v(" "),
+            _c("td", [_vm._v(_vm._s(book.loan_amount))]),
+            _vm._v(" "),
+            _c("td", [_vm._v(_vm._s(book.remaining_amount))]),
+            _vm._v(" "),
+            _c("td", [_vm._v(_vm._s(book.total))]),
+            _vm._v(" "),
+            _c("td", [_c("editBook", { attrs: { book: book } })], 1),
+            _vm._v(" "),
+            _c("td", [_c("deleteBook", { attrs: { bookId: book.id } })], 1)
+          ])
+        }),
+        0
+      ),
+      _vm._v(" "),
+      _c("tfoot")
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", [
+      _c("a", { attrs: { href: "#" } }, [_vm._v("Buscar Livro")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "searchForm" }, [
+      _c("form", [
+        _c("label", { attrs: { for: "book-search" } }, [
+          _vm._v("Buscar Livro")
+        ]),
+        _vm._v(" "),
+        _c("input", {
+          staticClass: "searchInput",
+          attrs: { type: "text", id: "book-search" }
+        }),
+        _vm._v(" "),
+        _c(
+          "button",
+          { staticClass: "sendButton", attrs: { "aria-selected": "false" } },
+          [_vm._v("Buscar")]
+        )
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("Id")]),
+        _vm._v(" "),
+        _c("td", [_vm._v("Título")]),
+        _vm._v(" "),
+        _c("td", [_vm._v("Quantidade Emprestada")]),
+        _vm._v(" "),
+        _c("td", [_vm._v("Quantidade Restante")]),
+        _vm._v(" "),
+        _c("td", [_vm._v("Total de Exemplares")]),
+        _vm._v(" "),
+        _c("td", { attrs: { colspan: "2" } }, [
+          _vm._v("\n                    Ações\n                ")
+        ])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-e3fd240e", module.exports)
+  }
+}
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */,
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(59)
+/* template */
+var __vue_template__ = __webpack_require__(58)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/Loan/LoanComponent.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-6f9c5d99", Component.options)
+  } else {
+    hotAPI.reload("data-v-6f9c5d99", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "loansPrincipalContainer" }, [
+    _c("div", { staticClass: "searchLoanContainer" }),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "loanListContainer" },
+      _vm._l(_vm.loans, function(loan) {
+        return _c("div", { key: loan.id, staticClass: "loanContainer" }, [
+          _c("div", { staticClass: "loanHeaderContainer" }, [
+            _c("p", { staticClass: "loanHeaderInfo" }, [
+              _c("span", { staticClass: "loanLabel" }, [
+                _vm._v("Nome do beneficiado:")
+              ]),
+              _vm._v(
+                " \n                    " +
+                  _vm._s(loan.recipient) +
+                  "\n\n                "
+              )
+            ]),
+            _vm._v(" "),
+            _c("p", { staticClass: "loanHeaderInfo" }, [
+              _c("span", { staticClass: "loanLabel" }, [
+                _vm._v("Data do Empréstimo:")
+              ]),
+              _vm._v(
+                "\n                    " +
+                  _vm._s(loan.loan_date) +
+                  "\n                "
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "loanBodyContainer" }, [
+            _c("p", { staticClass: "loanBodyInfo" }, [
+              _c("span", { staticClass: "loanLabel" }, [
+                _vm._v("Informação Adicional:")
+              ]),
+              _vm._v(
+                "\n                    " +
+                  _vm._s(loan.note) +
+                  "\n                "
+              )
+            ]),
+            _vm._v(" "),
+            _c("p", { staticClass: "loanBodyInfo" }, [
+              _c("span", { staticClass: "loanLabel" }, [_vm._v("Devolvido:")]),
+              _vm._v(
+                "\n                    " +
+                  _vm._s(loan.returned == true ? "Sim" : "Não") +
+                  "\n                "
+              )
+            ]),
+            _vm._v(" "),
+            _c("p", { staticClass: "loanBodyInfo" }, [
+              _c("span", { staticClass: "loanLabel" }, [_vm._v("Livro:")]),
+              _vm._v("\n                    " + _vm._s(loan.book.title) + " ")
+            ])
+          ])
+        ])
+      }),
+      0
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-6f9c5d99", module.exports)
+  }
+}
+
+/***/ }),
+/* 59 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
+
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            loans: []
+        };
+    },
+
+
+    methods: {
+        getLoans: function () {
+            var _ref = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee() {
+                var hasCachedLoans, http;
+                return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
+                                hasCachedLoans = localStorage.getItem('loans') != undefined;
+
+
+                                if (hasCachedLoans) {
+                                    this.loans = JSON.parse(localStorage.getItem('loans'));
+                                }
+
+                                http = __WEBPACK_IMPORTED_MODULE_1_axios___default.a;
+
+                                console.log(this.loans);
+
+                                _context.next = 6;
+                                return http.get('/api/loan').then(function (response) {
+                                    localStorage.setItem('loans', JSON.stringify(response.data));
+                                    return response.data;
+                                });
+
+                            case 6:
+                                this.loans = _context.sent;
+
+                            case 7:
+                            case 'end':
+                                return _context.stop();
+                        }
+                    }
+                }, _callee, this);
+            }));
+
+            function getLoans() {
+                return _ref.apply(this, arguments);
+            }
+
+            return getLoans;
+        }()
+    },
+
+    mounted: function mounted() {
+        this.getLoans();
+    }
+});
 
 /***/ })
 /******/ ]);

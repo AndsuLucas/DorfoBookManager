@@ -1,0 +1,295 @@
+/*books*/
+
+.bookListPrincipalContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  height: auto;
+  border: 0.5px solid #142850;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.optionsLinkGroup {
+  border: 0.5px solid #27496d;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+.optionsLinkGroup nav > ul {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.optionsLinkGroup nav > ul > li {
+  margin: 5px;
+}
+
+.searchForm {
+  margin-bottom: 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.searchForm form {
+  border: 0.5px solid #27496d;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.showBooksTable tr,
+.showBooksTable td,
+.showBooksTable {
+  border: 0.5px solid #27496d;
+  border-collapse: collapse;
+}
+
+.showBooksTable td,
+.showBooksTable th {
+  text-align: center;
+  padding: 10px;
+}
+
+.showBooksTable thead {
+  background-color: #0c7b93;
+  color: #ececec;
+}
+
+/*loans*/
+
+.loansPrincipalContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.loanListContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.loanListContainer p {
+  margin: 0;
+  padding: 0;
+}
+
+.loanContainer {
+  border: 0.5px solid #142850;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  padding: 10px;
+  min-height: 110px;
+}
+
+.loanLabel {
+  font-weight: bold;
+}
+
+.loanHeaderContainer {
+  padding: 5px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.loanBodyContainer {
+  padding: 5px;
+  max-width: 40%;
+}
+
+.loanBodyContainer .loanBodyInfo {
+  margin-bottom: 5px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial;
+  background-color: #ececec;
+  overflow-x: hidden;
+}
+
+li,
+a {
+  list-style: none;
+  text-decoration: none;
+}
+
+.principalHeader {
+  border-bottom: 3px solid #142850;
+  padding: 5px;
+  min-width: 100%;
+  background-color: #142850;
+}
+
+.principalHeader > .logo {
+  margin-left: 10px;
+  color: #ececec;
+}
+
+.principalContainer {
+  padding: 0px 15px;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: #142850;
+}
+
+button:focus {
+  outline: 0;
+}
+
+button {
+  border-radius: 2px;
+  white-space: nowrap;
+  outline: none;
+}
+
+a {
+  color: #27496d;
+  font-weight: bold;
+  display: block;
+}
+
+.principalNavBar > ul {
+  height: 50px;
+  border: 0.5px solid #27496d;
+  border-radius: 5px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.formModal {
+  position: fixed;
+  z-index: 99999;
+  min-width: 25%;
+  min-height: 400px;
+  left: calc(50% - 25%);
+  right: calc(50% - 25%);
+  top: 0;
+  background-color: white;
+}
+
+.formModal form {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.formModal form .formGroup {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  margin: 5%;
+}
+
+.formModal form .formGroup input {
+  border-radius: 3px;
+  outline: 0;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  border: 0.5px solid #27496d;
+  padding: 5px;
+  background-color: #ececec;
+}
+
+.formModal form .formGroup input:focus {
+  background-color: white;
+  border: 1px solid #0c7b93;
+}
+
+.formModal form .formGroup label {
+  -ms-flex-item-align: start;
+      align-self: flex-start;
+  margin-bottom: 5px;
+  color: #142850;
+  font-weight: bold;
+}
+
+.formModal .close {
+  color: red;
+  font-weight: bold;
+  position: absolute;
+  margin: 5px;
+  padding: 5px;
+  right: 5px;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.formModal button {
+  height: 50px;
+  color: #ececec;
+  font-size: 25px;
+  background-color: #0c7b93;
+  cursor: pointer;
+  border: none;
+  border-radius: 0;
+  -webkit-transition: ease-out 2s;
+  transition: ease-out 2s;
+}
+
+.formModal button:hover {
+  opacity: 0.9;
+  -webkit-transition: ease-in 1s;
+  transition: ease-in 1s;
+}
+
