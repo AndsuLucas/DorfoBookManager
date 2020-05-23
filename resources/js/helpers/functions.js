@@ -13,8 +13,7 @@ export const validateBookData = (book) => {
     }
 
     if (loan_amount > total) {
-        return 'Atente-se: A quantidade emprestada não pode ser maior que o total.';
-    
+        return 'Atente-se: A quantidade emprestada não pode ser maior que o total.';    
     }
 
     if (remaining_amount > total) {
@@ -45,6 +44,4 @@ export const parseBookData = (book) => {
     return book;
 };
 
-export const removeCachedBook = (bookId, callback) => {
-       
-}
+

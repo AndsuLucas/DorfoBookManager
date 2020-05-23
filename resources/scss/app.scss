@@ -1,5 +1,6 @@
 @import './variables/color';
 @import './mixins/genericComponents';
+@import './general';
 
 /*books*/
 @import './components/Book/bookComponent';
@@ -8,6 +9,7 @@
 
 /*loans*/
 @import './components/Loan/LoanComponent';
+
 body {
     margin: 0;
     padding: 0;
@@ -61,7 +63,11 @@ a {
     height: 50px;
     border: 0.5px solid $secondary;
     border-radius: 5px;
-
+    background-color: $ternary;
+    height: 35px;
+    li a{
+        color: $softWhite;
+    }
     @include navbar(row, space-around, center);
 }
 
@@ -107,7 +113,65 @@ a {
         opacity: 0.9;
         transition: ease-in 1s;
     }
-  
-  }
+}
+
+.filterPanel {
+    background-color: $ternary;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    color: $softWhite;
+    border-radius: 0px 0px 4px 4px;
+    .filterContainer {
+        display:flex;
+        justify-content: space-around;
+    }
+
+    .filterButton {
+        button {
+            background-color: $softWhite;
+            border: none;
+            color: $ternary;
+            cursor: pointer;
+            padding: 5px;
+            height: auto;
+            font-weight: bold;
+        }
+    }
+
+    .filterGroup {
+        flex-grow: 1;
+    }
+
+    .filterGroupGrow4 {
+        flex-grow: 4;
+    }
+
+    .inputGroup {
+       display: flex;
+       flex-grow: 2;
+       padding-bottom: 5px;
+    }
+
+    input {
+        height: 20px;
+        border: none;
+    }
+}
+
+.optionsLinkGroup {
+    border: 0.5px solid $secondary;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    background-color: $contrast;
+    nav > ul {
+        @include navbar(row, flex-start, center);
+    }
+
+    nav > ul > li {
+        margin: 5px;
+    }
+}
   
   

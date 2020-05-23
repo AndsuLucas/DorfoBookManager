@@ -23,6 +23,7 @@
 .loanLabel {
     font-weight: bold;
 }
+
 .loanHeaderContainer {
     padding: 5px;
     display: flex;
@@ -35,5 +36,22 @@
     
     .loanBodyInfo {
         margin-bottom: 5px;
+    }
+}
+
+.principalLoanContainer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.loanActionContainer {
+    padding: 5px;
+    
+    button {
+        color: $softWhite;
+        background-color: $ternary;
+        border: none;
+        cursor: pointer;
+        height: 25px;
     }
 }

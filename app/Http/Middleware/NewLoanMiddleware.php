@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use App\Book;
 
-class LoanMiddleware
+class NewLoanMiddleware
 {
     /**
      * Handle an incoming request.
@@ -20,14 +20,14 @@ class LoanMiddleware
         $book = Book::find($bookId);
         
         if (is_null($book)) {
-            return response()->json("Este livro não existe.", 404);
+            return response()->json("Este livro não existe.", 400);
         }
 
         $book->loan_amount += 1;
         $book->remaining_amount = $book->total - $book->loan_amount;
         
         if ($book->remaining_amount < 0) {
-            return response()->json("Quantidade de livros insuficiente para empréstimo.", 404);
+            return response()->json("Quantidade de livros insuficiente para empréstimo.", 400);
         }
         
         $request['requested_book'] = $book;

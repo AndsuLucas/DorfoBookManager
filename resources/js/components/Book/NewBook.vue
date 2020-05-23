@@ -3,11 +3,7 @@
         <a href="#" @click="toggleRegister">Registrar novo livro</a>
         <div class="formModal" v-show="registerMode">
             <span class="close" @click="toggleRegister">&times;</span>
-            <div class="feedBackPanel" id="feedBackPanel" @click="clearFeedBack" style="max-width: 80%;">
-                <div v-show="hasFeedback">
-                    <p>{{feedBack.content}}</p>
-                </div>
-            </div>
+            <feedBackPanel></feedBackPanel>
             <form action="#" class="newBookForm" id="new_book">
                 <div class="formGroup">
                     <label for="title">Título do exemplar</label>
@@ -34,17 +30,19 @@
 <script>
 import Axios from 'axios';
 import { validateBookData, parseBookData } from '../../helpers/functions.js';
+import Comunication from '../../Comunication.js';
+import feedBackPanel from '../GenericComponents/panelFeedBack';
 export default {
     
     data() {
         return {
             newBookData: {},
             registerMode: false,
-            feedBack: {
-                type: "",
-                content: ""
-            }
         }
+    },
+
+    components: {
+        feedBackPanel: feedBackPanel
     },
 
     methods: {
@@ -52,11 +50,10 @@ export default {
 
             const parsedBookData = parseBookData(this.newBookData);
             const validateMessage = validateBookData(parsedBookData);
+            // TODO: MELHORAR DEPOIS
             
             if (validateMessage != '') {
-                this.setFeedback(
-                    validateMessage, 'error'
-                );
+                Comunication.$emit('toggleFeedback', validateMessage);
                 return;
             }
             
@@ -69,32 +66,13 @@ export default {
                 if (feedBackType == 'success') {
                     localStorage.removeItem('books');
                 }
-
-                this.setFeedback(
-                    feedBackMessage, feedBackType
-                );
+                Comunication.$emit('toggleFeedback', feedBackMessage);
             });
         },
     
-        setFeedback(msg, type){
-            this.feedBack.type = type;
-            this.feedBack.content = msg;
-        },
-
-        clearFeedBack() {
-            this.feedBack.type = "";
-            this.feedBack.content = "";
-        },
-
         toggleRegister() {
             this.registerMode = !this.registerMode;            
         }
-    },
-
-    computed: {
-        hasFeedback() {
-            return (this.feedBack.type && this.feedBack.content) != "";
-        } 
-    },
+    }
 }
 </script>

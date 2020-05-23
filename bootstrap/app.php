@@ -62,7 +62,8 @@ $app->singleton(
 // ]);
 
 $app->routeMiddleware([
-    'newLoanMiddleware' => \App\Http\Middleware\LoanMiddleware::class
+    'newLoanMiddleware' => \App\Http\Middleware\NewLoanMiddleware::class,
+    'returnLoanMiddleware' => \App\Http\Middleware\ReturnLoanMiddleware::class
 ]);
 
 /*

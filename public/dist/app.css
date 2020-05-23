@@ -1,3 +1,9 @@
+input.dangerInput {
+  border-color: red !important;
+  -webkit-transition: 1 s;
+  transition: 1 s;
+}
+
 /*books*/
 
 .bookListPrincipalContainer {
@@ -15,32 +21,6 @@
   border: 0.5px solid #142850;
   border-radius: 5px;
   padding: 10px;
-}
-
-.optionsLinkGroup {
-  border: 0.5px solid #27496d;
-  margin-bottom: 20px;
-  border-radius: 5px;
-}
-
-.optionsLinkGroup nav > ul {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -webkit-box-pack: start;
-      -ms-flex-pack: start;
-          justify-content: flex-start;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-}
-
-.optionsLinkGroup nav > ul > li {
-  margin: 5px;
 }
 
 .searchForm {
@@ -138,6 +118,27 @@
   margin-bottom: 5px;
 }
 
+.principalLoanContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.loanActionContainer {
+  padding: 5px;
+}
+
+.loanActionContainer button {
+  color: #ececec;
+  background-color: #0c7b93;
+  border: none;
+  cursor: pointer;
+  height: 25px;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -193,6 +194,8 @@ a {
   height: 50px;
   border: 0.5px solid #27496d;
   border-radius: 5px;
+  background-color: #0c7b93;
+  height: 35px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -205,6 +208,10 @@ a {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+}
+
+.principalNavBar > ul li a {
+  color: #ececec;
 }
 
 .formModal {
@@ -241,7 +248,8 @@ a {
   margin: 5%;
 }
 
-.formModal form .formGroup input {
+.formModal form .formGroup input,
+.formModal form .formGroup textarea {
   border-radius: 3px;
   outline: 0;
   -webkit-box-shadow: none;
@@ -249,8 +257,10 @@ a {
   border: 0.5px solid #27496d;
   padding: 5px;
   background-color: #ececec;
+  resize: none;
 }
 
+.formModal form .formGroup textarea:focus,
 .formModal form .formGroup input:focus {
   background-color: white;
   border: 1px solid #0c7b93;
@@ -291,5 +301,92 @@ a {
   opacity: 0.9;
   -webkit-transition: ease-in 1s;
   transition: ease-in 1s;
+}
+
+.filterPanel {
+  background-color: #0c7b93;
+  padding: 5px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  margin: 0 auto;
+  color: #ececec;
+  border-radius: 0px 0px 4px 4px;
+}
+
+.filterPanel .filterContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+}
+
+.filterPanel .filterButton button {
+  background-color: #ececec;
+  border: none;
+  color: #0c7b93;
+  cursor: pointer;
+  padding: 5px;
+  height: auto;
+  font-weight: bold;
+}
+
+.filterPanel .filterGroup {
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+}
+
+.filterPanel .filterGroupGrow4 {
+  -webkit-box-flex: 4;
+      -ms-flex-positive: 4;
+          flex-grow: 4;
+}
+
+.filterPanel .inputGroup {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex: 2;
+      -ms-flex-positive: 2;
+          flex-grow: 2;
+  padding-bottom: 5px;
+}
+
+.filterPanel input {
+  height: 20px;
+  border: none;
+}
+
+.optionsLinkGroup {
+  border: 0.5px solid #27496d;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  background-color: #d4d4d4;
+}
+
+.optionsLinkGroup nav > ul {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.optionsLinkGroup nav > ul > li {
+  margin: 5px;
 }
 

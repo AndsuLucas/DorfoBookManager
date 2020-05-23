@@ -22,12 +22,12 @@ class BookController extends Controller
     {
         $this->bookModel = $bookModel;
     }
-
+    
     /**
      * Retorna todos os livros da base de dados.
      * @return string Json Listando os livros.
      */
-    public function showAllBooks(Request $request)
+    public function showAllBooks()
     {
         try {
             $books = $this->bookModel->all();
@@ -43,10 +43,6 @@ class BookController extends Controller
         
     }
 
-    /**
-     * Retorna todos os livros da base de dados.
-     * @return string Json Listando os livros.
-     */
     public function newBook(Request $request)
     {
         try {
@@ -65,6 +61,12 @@ class BookController extends Controller
         } catch(\Throwable $th) {
             return response()->json(self::SERVER_ERROR_MESSAGE, 500);
         }
+    }
+
+    public function returnValidBooksToLoan()
+    {
+        $books = $this->bookModel->where('remaining_amount', '>', 0)->get();
+        return response()->json($books, 200);
     }
 
     public function editBook(Request $request, $id)

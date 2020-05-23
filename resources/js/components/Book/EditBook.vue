@@ -4,11 +4,7 @@
         <div v-show="editMode" class="formModal">
             <span class="close" @click="enterEditMode">&times;</span>
             <form action="#">
-                <div class="feedBackPanel" id="feedBackPanel" @click="clearFeedBack">
-                    <div v-show="hasFeedback">
-                        <p>{{feedBack.content}}</p>
-                    </div>
-                </div>
+                <feedBackPanel></feedBackPanel>
                 <div class="formGroup">
                     <label for="title">Título do exemplar</label>
                     <span class="tagRequired"></span>
@@ -37,6 +33,9 @@
 <script>
 import Axios from 'axios'
 import { validateBookData, parseBookData } from '../../helpers/functions.js';
+import Comunication from '../../Comunication.js';
+import feedBackPanel from '../GenericComponents/panelFeedBack';
+
 export default {
 
     props: {
@@ -46,11 +45,10 @@ export default {
     data() {
         return {
             editMode: false,
-            feedBack: {
-                type: "",
-                content: ""
-            }
         }
+    },
+    components: {
+        feedBackPanel: feedBackPanel
     },
 
     methods: {
@@ -62,44 +60,23 @@ export default {
             const validateMessage = validateBookData(parsedBookData);
             
             if (validateMessage != '') {
-                this.setFeedback(
-                    validateMessage, 'error'
-                );
+                Comunication.$emit('toggleFeedback', validateMessage);
                 return;
             }
+            
         
             http.put(url, this.book)
             .then((response) => {
                 const feedBackType = response.status == 'OK' ? 'success' : 'error';
                 const feedBackMessage = response.data;
-                this.setFeedback(
-                    feedBackMessage, feedBackType
-                );
-            });
-        },
-        
-        setFeedback(msg, type){
-            this.feedBack.type = type;
-            this.feedBack.content = msg;
-        },
 
-        clearFeedBack() {
-            this.feedBack.type = "";
-            this.feedBack.content = "";
+               Comunication.$emit('toggleFeedback', feedBackMessage);
+            });
         },
         
         enterEditMode() {
             this.editMode = !this.editMode;
         }
     },
-
-    computed: {
-        hasFeedback() {
-            return (this.feedBack.type && this.feedBack.content) != "";
-        } 
-    },
-
-    watch: {
-    }
 }
 </script>
