@@ -8,19 +8,19 @@
                 <div class="formGroup">
                     <label for="title">Título do exemplar</label>
                     <span class="tagRequired"></span>
-                    <input type="text" id="title" class="registerInput" v-model="book.title" aria-selected="false" @keyup="parseBook">
+                    <input type="text" id="title" class="registerInput" v-model="book.title" aria-selected="false" @input="parseBook" @change="parseBook">
                 </div>
                 <div class="formGroup">
                     <label for="loan_amount">Quantidade Emprestada</label>
-                    <input type="number" id="loan_amount" class="registerInput" v-model="book.loan_amount" min="0" :max="book.total" @keyup="parseBook">
+                    <input type="number" id="loan_amount" class="registerInput" v-model="book.loan_amount" min="0" :max="book.total" @input="parseBook" @change="parseBook">
                 </div>
                 <div class="formGroup">
                     <label for="remaining_amount">Quantidade Restante</label>
-                    <input type="number"  id="remaining_amount" class="registerInput" min="0" :max="book.total" v-model="book.remaining_amount" @keyup="parseBook">
+                    <input type="number"  id="remaining_amount" class="registerInput" min="0" :max="book.total" v-model="book.remaining_amount" @input="parseBook" @change="parseBook">
                 </div>
                 <div class="formGroup">
                     <label for="total">Total de Exemplares</label>
-                    <input type="text" id="total" class="registerInput" v-model="book.total" @keyup="parseBook">
+                    <input type="text" id="total" class="registerInput" v-model="book.total" @input="parseBook" @change="parseBook">
                 </div>
             
                 <button type="submit" @click="editBook">Salvar Edição</button>
@@ -58,7 +58,6 @@ export default {
             const url = `/api/book/edit/${this.book.id}`;
 
             const validateMessage = validateBookData(this.book);
-
             if (validateMessage != '') {
                 Comunication.$emit('toggleFeedback', validateMessage);
                 return;
@@ -74,7 +73,7 @@ export default {
         },
 
         parseBook() {
-            this.book = parseBookData(this.book)
+            parseBookData(this.book)
         },
 
         enterEditMode() {

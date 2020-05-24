@@ -8,9 +8,9 @@ class IntervalDateFilter extends \App\Filters\FilterInterface
     {
 
         $hasValidParam = (
-            ( isset($params['loan_date_start']) && !empty($params['loan_date_start']) )
+            ( isset($params['loan_date_start']) && !is_null($params['loan_date_start']) )
             ||
-            ( isset($params['loan_date_end']) && !empty($params['loan_date_end']) )
+            ( isset($params['loan_date_end']) && !is_null($params['loan_date_end']) )
         );
 
         $handler = $this->getQueryInstance($model);

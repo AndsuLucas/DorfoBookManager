@@ -6,7 +6,7 @@ class RecipientFilter extends \App\Filters\FilterInterface
 {
     public function apply(\Illuminate\Database\Eloquent\Model $model, array $params)
     {
-        $hasValidParam = isset($params['recipient']) && !empty($params['recipient']);
+        $hasValidParam = isset($params['recipient']) && !is_null($params['recipient']);
         if (!$hasValidParam){
             $this->executeNextFilter($model, $params);
             return;

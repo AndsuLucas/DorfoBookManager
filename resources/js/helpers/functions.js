@@ -27,7 +27,7 @@ export const validateBookData = (book) => {
     }
 
     const isEmptyTitle = (title.toString().trim().length == 0);
-
+    
     if (isEmptyTitle) {
         return 'Atente-se: O título deve ser preeenchido.';
     }
@@ -36,12 +36,29 @@ export const validateBookData = (book) => {
 };
 
 export const parseBookData = (book) => {
-    book.loan_amount = isNaN(book.loan_amount) || book.remaining_amount < 0 ? 0 : parseInt(book.loan_amount);
-    book.remaining_amount = isNaN(book.remaining_amount) || book.remaining_amount < 0 ? 0 : parseInt(book.remaining_amount);
-    book.total = book.total == undefined || book.total <= 0 || isNaN(book.total) ? 1 : parseInt(book.total);
-    book.title = book.title == undefined ? '' : book.title;
+    const loanAmount = parseInt(book.loan_amount);
+    const total = parseInt(book.total);
+    
+    if (isNaN(total) || total < 0) {
+        book.total = 1;
+    }
+
+    if (isNaN(loanAmount)) {
+        book.loan_amount = 0;
+    }
+
+    if (loanAmount < 0 || loanAmount > total) {
+        book.loan_amount = total;
+    }
+
+
+    if (book.title == undefined) {
+        book.title = "";
+    }
+
+    book.title = book.title.toString().replace(/\d/, "");    
     book.remaining_amount = book.total - book.loan_amount;
-    return book;
+
 };
 
 

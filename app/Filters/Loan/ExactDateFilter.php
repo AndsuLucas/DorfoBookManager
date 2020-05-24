@@ -7,7 +7,7 @@ class ExactDateFilter extends \App\Filters\FilterInterface
     public function apply(\Illuminate\Database\Eloquent\Model $model, array $params)
     {
 
-        $hasValidParam = isset($params['loan_date']) && !empty($params['loan_date']);
+        $hasValidParam = isset($params['loan_date']) && !is_null($params['loan_date']);
 
         if (!$hasValidParam){
             $this->executeNextFilter($model, $params);

@@ -1397,12 +1397,27 @@ var validateBookData = function validateBookData(book) {
 };
 
 var parseBookData = function parseBookData(book) {
-    book.loan_amount = isNaN(book.loan_amount) || book.remaining_amount < 0 ? 0 : parseInt(book.loan_amount);
-    book.remaining_amount = isNaN(book.remaining_amount) || book.remaining_amount < 0 ? 0 : parseInt(book.remaining_amount);
-    book.total = book.total == undefined || book.total <= 0 || isNaN(book.total) ? 1 : parseInt(book.total);
-    book.title = book.title == undefined ? '' : book.title;
+    var loanAmount = parseInt(book.loan_amount);
+    var total = parseInt(book.total);
+
+    if (isNaN(total) || total < 0) {
+        book.total = 1;
+    }
+
+    if (isNaN(loanAmount)) {
+        book.loan_amount = 0;
+    }
+
+    if (loanAmount < 0 || loanAmount > total) {
+        book.loan_amount = total;
+    }
+
+    if (book.title == undefined) {
+        book.title = "";
+    }
+
+    book.title = book.title.toString().replace(/\d/, "");
     book.remaining_amount = book.total - book.loan_amount;
-    return book;
 };
 
 /***/ }),
@@ -18458,9 +18473,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
         newBook: function newBook() {
 
-            var validateMessage = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["b" /* validateBookData */])(parsedBookData);
-            // TODO: MELHORAR DEPOIS
-
+            var validateMessage = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["b" /* validateBookData */])(this.newBookData);
             if (validateMessage != '') {
                 __WEBPACK_IMPORTED_MODULE_2__Comunication_js__["a" /* default */].$emit('toggleFeedback', validateMessage);
                 return;
@@ -18481,7 +18494,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.registerMode = !this.registerMode;
         },
         parseBook: function parseBook() {
-            this.newBookData = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["a" /* parseBookData */])(this.newBookData);
+            Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["a" /* parseBookData */])(this.newBookData);
+            console.log(this.newBookData);
         }
     }
 });
@@ -18624,13 +18638,16 @@ var render = function() {
                 attrs: { type: "text", id: "title" },
                 domProps: { value: _vm.newBookData.title },
                 on: {
-                  keyup: _vm.parseBook,
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.newBookData, "title", $event.target.value)
-                  }
+                  input: [
+                    function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.newBookData, "title", $event.target.value)
+                    },
+                    _vm.parseBook
+                  ],
+                  change: _vm.parseBook
                 }
               })
             ]),
@@ -18658,17 +18675,52 @@ var render = function() {
                 },
                 domProps: { value: _vm.newBookData.loan_amount },
                 on: {
-                  keyup: _vm.parseBook,
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(
-                      _vm.newBookData,
-                      "loan_amount",
-                      $event.target.value
-                    )
+                  input: [
+                    function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.newBookData,
+                        "loan_amount",
+                        $event.target.value
+                      )
+                    },
+                    _vm.parseBook
+                  ],
+                  change: _vm.parseBook
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "formGroup" }, [
+              _c("label", { attrs: { for: "total" } }, [
+                _vm._v("Total de Exemplares")
+              ]),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.newBookData.total,
+                    expression: "newBookData.total"
                   }
+                ],
+                staticClass: "registerInput",
+                attrs: { type: "number", id: "total", min: "0" },
+                domProps: { value: _vm.newBookData.total },
+                on: {
+                  input: [
+                    function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.newBookData, "total", $event.target.value)
+                    },
+                    _vm.parseBook
+                  ],
+                  change: _vm.parseBook
                 }
               })
             ]),
@@ -18692,50 +18744,25 @@ var render = function() {
                   type: "number",
                   id: "remaining_amount",
                   min: "0",
-                  max: _vm.newBookData.total
+                  max: _vm.newBookData.total,
+                  disabled: "true"
                 },
                 domProps: { value: _vm.newBookData.remaining_amount },
                 on: {
-                  keyup: _vm.parseBook,
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(
-                      _vm.newBookData,
-                      "remaining_amount",
-                      $event.target.value
-                    )
-                  }
-                }
-              })
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "formGroup" }, [
-              _c("label", { attrs: { for: "total" } }, [
-                _vm._v("Total de Exemplares")
-              ]),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.newBookData.total,
-                    expression: "newBookData.total"
-                  }
-                ],
-                staticClass: "registerInput",
-                attrs: { type: "number", id: "total", min: "0" },
-                domProps: { value: _vm.newBookData.total },
-                on: {
-                  keyup: _vm.parseBook,
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.newBookData, "total", $event.target.value)
-                  }
+                  input: [
+                    function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.newBookData,
+                        "remaining_amount",
+                        $event.target.value
+                      )
+                    },
+                    _vm.parseBook
+                  ],
+                  change: _vm.parseBook
                 }
               })
             ]),
@@ -18885,7 +18912,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var url = '/api/book/edit/' + this.book.id;
 
             var validateMessage = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["b" /* validateBookData */])(this.book);
-
             if (validateMessage != '') {
                 __WEBPACK_IMPORTED_MODULE_2__Comunication_js__["a" /* default */].$emit('toggleFeedback', validateMessage);
                 return;
@@ -18898,7 +18924,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         },
         parseBook: function parseBook() {
-            this.book = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["a" /* parseBookData */])(this.book);
+            Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["a" /* parseBookData */])(this.book);
         },
         enterEditMode: function enterEditMode() {
             this.editMode = !this.editMode;
@@ -18961,13 +18987,16 @@ var render = function() {
                 attrs: { type: "text", id: "title", "aria-selected": "false" },
                 domProps: { value: _vm.book.title },
                 on: {
-                  keyup: _vm.parseBook,
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.book, "title", $event.target.value)
-                  }
+                  input: [
+                    function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.book, "title", $event.target.value)
+                    },
+                    _vm.parseBook
+                  ],
+                  change: _vm.parseBook
                 }
               })
             ]),
@@ -18995,13 +19024,16 @@ var render = function() {
                 },
                 domProps: { value: _vm.book.loan_amount },
                 on: {
-                  keyup: _vm.parseBook,
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.book, "loan_amount", $event.target.value)
-                  }
+                  input: [
+                    function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.book, "loan_amount", $event.target.value)
+                    },
+                    _vm.parseBook
+                  ],
+                  change: _vm.parseBook
                 }
               })
             ]),
@@ -19029,13 +19061,20 @@ var render = function() {
                 },
                 domProps: { value: _vm.book.remaining_amount },
                 on: {
-                  keyup: _vm.parseBook,
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.book, "remaining_amount", $event.target.value)
-                  }
+                  input: [
+                    function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.book,
+                        "remaining_amount",
+                        $event.target.value
+                      )
+                    },
+                    _vm.parseBook
+                  ],
+                  change: _vm.parseBook
                 }
               })
             ]),
@@ -19058,13 +19097,16 @@ var render = function() {
                 attrs: { type: "text", id: "total" },
                 domProps: { value: _vm.book.total },
                 on: {
-                  keyup: _vm.parseBook,
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.book, "total", $event.target.value)
-                  }
+                  input: [
+                    function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.book, "total", $event.target.value)
+                    },
+                    _vm.parseBook
+                  ],
+                  change: _vm.parseBook
                 }
               })
             ]),
