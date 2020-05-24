@@ -8,19 +8,19 @@
                 <div class="formGroup">
                     <label for="title">Título do exemplar</label>
                     <span class="tagRequired"></span>
-                    <input type="text" id="title" class="registerInput" v-model="newBookData.title">
+                    <input type="text" id="title" class="registerInput" v-model="newBookData.title" @keyup="parseBook">
                 </div>
                 <div class="formGroup">
                     <label for="loan_amount">Quantidade Emprestada</label>
-                    <input type="number" id="loan_amount" class="registerInput" v-model="newBookData.loan_amount" min="0" :max="newBookData.total">
+                    <input type="number" id="loan_amount" class="registerInput" v-model="newBookData.loan_amount" min="0" :max="newBookData.total" @keyup="parseBook">
                 </div>
                 <div class="formGroup">
                     <label for="remaining_amount">Quantidade Restante</label>
-                    <input type="number"  id="remaining_amount" class="registerInput" min="0" :max="newBookData.total" v-model="newBookData.remaining_amount">
+                    <input type="number"  id="remaining_amount" class="registerInput" min="0" :max="newBookData.total" v-model="newBookData.remaining_amount" @keyup="parseBook">
                 </div>
                 <div class="formGroup">
                     <label for="total">Total de Exemplares</label>
-                    <input type="number" id="total" class="registerInput" v-model="newBookData.total" min="0">
+                    <input type="number" id="total" class="registerInput" v-model="newBookData.total" min="0" @keyup="parseBook">
                 </div>
                 <button id="sendButton" @click="newBook" type="submit">Registrar</button>
             </form>
@@ -48,7 +48,6 @@ export default {
     methods: {
         newBook() {
 
-            const parsedBookData = parseBookData(this.newBookData);
             const validateMessage = validateBookData(parsedBookData);
             // TODO: MELHORAR DEPOIS
             
@@ -72,6 +71,10 @@ export default {
     
         toggleRegister() {
             this.registerMode = !this.registerMode;            
+        },
+
+        parseBook() {
+             this.newBookData = parseBookData(this.newBookData);
         }
     }
 }

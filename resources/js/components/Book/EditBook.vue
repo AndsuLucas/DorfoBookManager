@@ -8,19 +8,19 @@
                 <div class="formGroup">
                     <label for="title">Título do exemplar</label>
                     <span class="tagRequired"></span>
-                    <input type="text" id="title" class="registerInput" v-model="book.title" aria-selected="false">
+                    <input type="text" id="title" class="registerInput" v-model="book.title" aria-selected="false" @keyup="parseBook">
                 </div>
                 <div class="formGroup">
                     <label for="loan_amount">Quantidade Emprestada</label>
-                    <input type="number" id="loan_amount" class="registerInput" v-model="book.loan_amount" min="0" :max="book.total">
+                    <input type="number" id="loan_amount" class="registerInput" v-model="book.loan_amount" min="0" :max="book.total" @keyup="parseBook">
                 </div>
                 <div class="formGroup">
                     <label for="remaining_amount">Quantidade Restante</label>
-                    <input type="number"  id="remaining_amount" class="registerInput" min="0" :max="book.total" v-model="book.remaining_amount">
+                    <input type="number"  id="remaining_amount" class="registerInput" min="0" :max="book.total" v-model="book.remaining_amount" @keyup="parseBook">
                 </div>
                 <div class="formGroup">
                     <label for="total">Total de Exemplares</label>
-                    <input type="text" id="total" class="registerInput" v-model="book.total">
+                    <input type="text" id="total" class="registerInput" v-model="book.total" @keyup="parseBook">
                 </div>
             
                 <button type="submit" @click="editBook">Salvar Edição</button>
@@ -47,6 +47,7 @@ export default {
             editMode: false,
         }
     },
+
     components: {
         feedBackPanel: feedBackPanel
     },
@@ -55,28 +56,31 @@ export default {
         editBook() {
             const http = Axios;
             const url = `/api/book/edit/${this.book.id}`;
-    
-            const parsedBookData = parseBookData(this.book);
-            const validateMessage = validateBookData(parsedBookData);
-            
+
+            const validateMessage = validateBookData(this.book);
+
             if (validateMessage != '') {
                 Comunication.$emit('toggleFeedback', validateMessage);
                 return;
             }
-            
-        
+
             http.put(url, this.book)
             .then((response) => {
                 const feedBackType = response.status == 'OK' ? 'success' : 'error';
                 const feedBackMessage = response.data;
-
                Comunication.$emit('toggleFeedback', feedBackMessage);
+
             });
         },
-        
+
+        parseBook() {
+            this.book = parseBookData(this.book)
+        },
+
         enterEditMode() {
             this.editMode = !this.editMode;
-        }
+        },
+
     },
 }
 </script>

@@ -1397,9 +1397,9 @@ var validateBookData = function validateBookData(book) {
 };
 
 var parseBookData = function parseBookData(book) {
-    book.loan_amount = isNaN(book.loan_amount) ? 0 : parseInt(book.loan_amount);
-    book.remaining_amount = isNaN(book.remaining_amount) ? 0 : parseInt(book.remaining_amount);
-    book.total = book.total == undefined || book.total <= 0 ? 1 : parseInt(book.total);
+    book.loan_amount = isNaN(book.loan_amount) || book.remaining_amount < 0 ? 0 : parseInt(book.loan_amount);
+    book.remaining_amount = isNaN(book.remaining_amount) || book.remaining_amount < 0 ? 0 : parseInt(book.remaining_amount);
+    book.total = book.total == undefined || book.total <= 0 || isNaN(book.total) ? 1 : parseInt(book.total);
     book.title = book.title == undefined ? '' : book.title;
     book.remaining_amount = book.total - book.loan_amount;
     return book;
@@ -18458,7 +18458,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
         newBook: function newBook() {
 
-            var parsedBookData = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["a" /* parseBookData */])(this.newBookData);
             var validateMessage = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["b" /* validateBookData */])(parsedBookData);
             // TODO: MELHORAR DEPOIS
 
@@ -18480,6 +18479,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         toggleRegister: function toggleRegister() {
             this.registerMode = !this.registerMode;
+        },
+        parseBook: function parseBook() {
+            this.newBookData = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["a" /* parseBookData */])(this.newBookData);
         }
     }
 });
@@ -18622,6 +18624,7 @@ var render = function() {
                 attrs: { type: "text", id: "title" },
                 domProps: { value: _vm.newBookData.title },
                 on: {
+                  keyup: _vm.parseBook,
                   input: function($event) {
                     if ($event.target.composing) {
                       return
@@ -18655,6 +18658,7 @@ var render = function() {
                 },
                 domProps: { value: _vm.newBookData.loan_amount },
                 on: {
+                  keyup: _vm.parseBook,
                   input: function($event) {
                     if ($event.target.composing) {
                       return
@@ -18692,6 +18696,7 @@ var render = function() {
                 },
                 domProps: { value: _vm.newBookData.remaining_amount },
                 on: {
+                  keyup: _vm.parseBook,
                   input: function($event) {
                     if ($event.target.composing) {
                       return
@@ -18724,6 +18729,7 @@ var render = function() {
                 attrs: { type: "number", id: "total", min: "0" },
                 domProps: { value: _vm.newBookData.total },
                 on: {
+                  keyup: _vm.parseBook,
                   input: function($event) {
                     if ($event.target.composing) {
                       return
@@ -18868,6 +18874,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         };
     },
 
+
     components: {
         feedBackPanel: __WEBPACK_IMPORTED_MODULE_3__GenericComponents_panelFeedBack___default.a
     },
@@ -18877,8 +18884,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var http = __WEBPACK_IMPORTED_MODULE_0_axios___default.a;
             var url = '/api/book/edit/' + this.book.id;
 
-            var parsedBookData = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["a" /* parseBookData */])(this.book);
-            var validateMessage = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["b" /* validateBookData */])(parsedBookData);
+            var validateMessage = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["b" /* validateBookData */])(this.book);
 
             if (validateMessage != '') {
                 __WEBPACK_IMPORTED_MODULE_2__Comunication_js__["a" /* default */].$emit('toggleFeedback', validateMessage);
@@ -18888,9 +18894,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             http.put(url, this.book).then(function (response) {
                 var feedBackType = response.status == 'OK' ? 'success' : 'error';
                 var feedBackMessage = response.data;
-
                 __WEBPACK_IMPORTED_MODULE_2__Comunication_js__["a" /* default */].$emit('toggleFeedback', feedBackMessage);
             });
+        },
+        parseBook: function parseBook() {
+            this.book = Object(__WEBPACK_IMPORTED_MODULE_1__helpers_functions_js__["a" /* parseBookData */])(this.book);
         },
         enterEditMode: function enterEditMode() {
             this.editMode = !this.editMode;
@@ -18953,6 +18961,7 @@ var render = function() {
                 attrs: { type: "text", id: "title", "aria-selected": "false" },
                 domProps: { value: _vm.book.title },
                 on: {
+                  keyup: _vm.parseBook,
                   input: function($event) {
                     if ($event.target.composing) {
                       return
@@ -18986,6 +18995,7 @@ var render = function() {
                 },
                 domProps: { value: _vm.book.loan_amount },
                 on: {
+                  keyup: _vm.parseBook,
                   input: function($event) {
                     if ($event.target.composing) {
                       return
@@ -19019,6 +19029,7 @@ var render = function() {
                 },
                 domProps: { value: _vm.book.remaining_amount },
                 on: {
+                  keyup: _vm.parseBook,
                   input: function($event) {
                     if ($event.target.composing) {
                       return
@@ -19047,6 +19058,7 @@ var render = function() {
                 attrs: { type: "text", id: "total" },
                 domProps: { value: _vm.book.total },
                 on: {
+                  keyup: _vm.parseBook,
                   input: function($event) {
                     if ($event.target.composing) {
                       return

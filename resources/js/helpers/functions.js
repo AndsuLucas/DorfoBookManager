@@ -36,9 +36,9 @@ export const validateBookData = (book) => {
 };
 
 export const parseBookData = (book) => {
-    book.loan_amount = isNaN(book.loan_amount) ? 0 : parseInt(book.loan_amount);
-    book.remaining_amount = isNaN(book.remaining_amount) ? 0 : parseInt(book.remaining_amount);
-    book.total = book.total == undefined || book.total <= 0 ? 1 : parseInt(book.total);
+    book.loan_amount = isNaN(book.loan_amount) || book.remaining_amount < 0 ? 0 : parseInt(book.loan_amount);
+    book.remaining_amount = isNaN(book.remaining_amount) || book.remaining_amount < 0 ? 0 : parseInt(book.remaining_amount);
+    book.total = book.total == undefined || book.total <= 0 || isNaN(book.total) ? 1 : parseInt(book.total);
     book.title = book.title == undefined ? '' : book.title;
     book.remaining_amount = book.total - book.loan_amount;
     return book;
