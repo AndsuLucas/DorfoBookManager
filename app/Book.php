@@ -9,6 +9,14 @@ class Book extends Model
 
     public function loan()
     {
-        return $this->hasMany('App\Loan');
+        return $this->hasMany('App\Loan', 'id_book');
+    }
+
+    public static function boot() {
+        parent::boot();
+
+        static::deleting(function($book){
+            $book->loan()->delete();
+        });
     }
 }

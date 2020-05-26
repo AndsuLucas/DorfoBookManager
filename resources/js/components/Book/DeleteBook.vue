@@ -13,7 +13,7 @@ export default {
 
     methods: {
         deleteBook() {
-            
+            alert('Aviso: Ao deleter um livro que contenha algum empréstimo, estes serão deletados também!');
             const http = Axios;
             const url = `/api/book/delete/${this.bookId}`;
             const confirm = window.confirm('Deseja mesmo deletar este Livro?');
