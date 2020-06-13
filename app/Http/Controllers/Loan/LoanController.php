@@ -117,6 +117,7 @@ class LoanController extends Controller
             $jsonResponse = response()->json($result, 200, self::HEADERS);
 
             return $jsonResponse;
+
         } catch (\Throwable $th) {
 
             $jsonResponse = response()->json(

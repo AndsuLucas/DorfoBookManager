@@ -1,8 +1,7 @@
 <?php
 
 // api
-$router->group(['prefix' => 'api'], function() use ($router) {
-    
+$router->group(['prefix' => 'api'], function() use ($router) {    
     $router->group(['prefix' => 'book'], function() use ($router){
         $router->get('', 'Book\BookController@showAllBooks');
         $router->get('getBooksToLoan', 'Book\BookController@returnValidBooksToLoan');
@@ -18,8 +17,12 @@ $router->group(['prefix' => 'api'], function() use ($router) {
         $router->get('filter', 'Loan\LoanController@filterLoan');
     });
 
-});
 
+    $router->group(['prefrix' => 'auth'], function() use ($router){
+        $router->post('/login', 'User\UserController@login');
+        $router->post('/register', 'User\UserController@register');
+    });
+});
 
 // view (singlepage)
 $router->get('/{route:.*}/', function ()  {
