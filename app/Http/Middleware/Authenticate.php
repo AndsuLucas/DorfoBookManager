@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
+use App\User;
 
 class Authenticate
 {
@@ -20,22 +21,32 @@ class Authenticate
      * @param  \Illuminate\Contracts\Auth\Factory  $auth
      * @return void
      */
-    public function __construct(Auth $auth)
+    public function __construct(Auth $auth, User $user)
     {
+        $this->user = $user;
         $this->auth = $auth;
     }
 
     /**
-     * Handle an incoming request.
+     * Manipula a requisição e verifica se o usuário possui autenticação.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
-     * @param  string|null  $guard
      * @return mixed
      */
-    public function handle($request, Closure $next, $guard = null)
+    public function handle($request, Closure $next)
     {
-        if ($this->auth->guard($guard)->guest()) {
+        if (!$request->has('access_token')) {
+            return response('Unauthorized.', 401);
+        }
+
+        $accessToken = $request->get('access_token');
+        $user = $this->user->where('token', $accessToken);
+        $rows = $user->get();
+
+        $hasUser = !$rows->isEmpty();
+
+        if (!$hasUser) {
             return response('Unauthorized.', 401);
         }
 
