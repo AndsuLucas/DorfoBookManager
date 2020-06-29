@@ -17,12 +17,12 @@ $router->group(['prefix' => 'api'], function() use ($router) {
         $router->get('filter', 'Loan\LoanController@filterLoan');
     });
 
-
-    $router->group(['prefrix' => 'auth'], function() use ($router){
+    $router->group(['prefix' => 'auth'], function() use ($router){
         $router->post('/login', 'User\UserController@login');
         $router->post('/register', 'User\UserController@register');
     });
 });
+
 
 // view (singlepage)
 $router->get('/{route:.*}/', function ()  {
