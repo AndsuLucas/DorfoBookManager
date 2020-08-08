@@ -33,7 +33,7 @@ import { validateBookData, parseBookData } from '../../helpers/functions.js';
 import Comunication from '../../Comunication.js';
 import feedBackPanel from '../GenericComponents/panelFeedBack';
 export default {
-    
+
     data() {
         return {
             newBookData: {},
@@ -53,29 +53,27 @@ export default {
                 Comunication.$emit('toggleFeedback', validateMessage);
                 return;
             }
-            
-            
+
+
             const http = Axios.post('/api/book/new', this.newBookData);
             http.then((response) => {
                 const feedBackType = response.status == 'OK' ? 'success' : 'error';
                 const feedBackMessage = response.data;
-                
+
                 if (feedBackType == 'success') {
                     localStorage.removeItem('books');
                 }
                 Comunication.$emit('toggleFeedback', feedBackMessage);
             });
         },
-    
+
         toggleRegister() {
-            this.registerMode = !this.registerMode;            
+            this.registerMode = !this.registerMode;
         },
 
         parseBook() {
             parseBookData(this.newBookData);
-            console.log(this.newBookData)
         }
     },
 }
 </script>
-

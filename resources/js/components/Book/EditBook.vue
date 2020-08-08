@@ -4,7 +4,7 @@
         <div v-show="editMode" class="formModal">
             <span class="close" @click="enterEditMode">&times;</span>
             <form action="#">
-                <feedBackPanel></feedBackPanel>
+                <panelFeedback></panelFeedback>
                 <div class="formGroup">
                     <label for="title">Título do exemplar</label>
                     <span class="tagRequired"></span>
@@ -22,9 +22,9 @@
                     <label for="total">Total de Exemplares</label>
                     <input type="text" id="total" class="registerInput" v-model="book.total" @input="parseBook" @change="parseBook">
                 </div>
-            
+
                 <button type="submit" @click="editBook">Salvar Edição</button>
-                
+
             </form>
         </div>
     </div>
@@ -34,7 +34,7 @@
 import Axios from 'axios'
 import { validateBookData, parseBookData } from '../../helpers/functions.js';
 import Comunication from '../../Comunication.js';
-import feedBackPanel from '../GenericComponents/panelFeedBack';
+import panelFeedback from '../GenericComponents/panelFeedBack';
 
 export default {
 
@@ -49,7 +49,7 @@ export default {
     },
 
     components: {
-        feedBackPanel: feedBackPanel
+        panelFeedback: panelFeedback
     },
 
     methods: {

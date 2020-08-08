@@ -82,7 +82,13 @@ export default {
             this.loans = await http.get('/api/loan').then((response) => {
                 localStorage.setItem('loans', JSON.stringify(response.data));
                 return response.data;
-            });
+            }).catch((error) => {
+                if (error.response.statusCode = 401) {
+                    alert('Autorização negada');
+                    Comunication.$emit('isNotLogged');
+                    this.$root.$router.push('/user')
+                }
+            })
         },
 
         toggleFilter() {

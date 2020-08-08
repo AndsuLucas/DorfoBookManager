@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Filters\Loan\Client;
 
@@ -30,7 +30,7 @@ class FilterLoanClient
         $this->intervalDateFilter = $intervalDateFilter;
     }
 
-    private function parseParameters($params) 
+    private function parseParameters($params)
     {
         $parsedParams = array_filter($params, function($key){
             return in_array($key, $this->validParams);
@@ -49,7 +49,7 @@ class FilterLoanClient
         $this->returnedFilter->setNextFilter(
             $this->recipientFilter
         );
-        
+
         $this->recipientFilter->setNextFilter(
             $this->exactDateFilter
         );

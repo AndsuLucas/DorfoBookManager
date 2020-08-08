@@ -11,7 +11,7 @@
         flex-direction: column;
         justify-content: space-around;
         margin: 5%;
-        
+
         input, textarea {
             border-radius: 3px;
             outline: 0;
@@ -24,7 +24,7 @@
 
         textarea:focus, input:focus {
             background-color: white;
-            border: 1px solid $ternary;   
+            border: 1px solid $ternary;
         }
 
         label {
@@ -33,6 +33,13 @@
             color: $principal;
             font-weight: bold;
         }
+    }
+}
+
+@mixin opacityHoverButton {
+    button:hover {
+        opacity: 0.9;
+        transition: ease-in 1s;
     }
 }
 

@@ -4,21 +4,21 @@
             <nav>
                 <ul>
                     <li>
-                        <new-book/>      
+                        <new-book/>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a href="#">Buscar Livro</a>
-                    </li>
+                    </li> -->
                 </ul>
             </nav>
         </div>
-        <div class="searchForm">
+        <!-- <div class="searchForm">
             <form>
                 <label for="book-search">Buscar Livro</label>
                 <input type="text" class="searchInput" id="book-search">
                 <button class="sendButton" aria-selected="false">Buscar</button>
             </form>
-        </div>
+        </div> -->
         <table class="showBooksTable">
             <thead>
                 <tr>
@@ -44,7 +44,7 @@
                     </td>
                     <td>
                         <deleteBook :bookId="book.id"/>
-                    </td>          
+                    </td>
                 </tr>
             </tbody>
             <tfoot></tfoot>
@@ -56,6 +56,7 @@ import Axios from 'axios';
 import newBook from './NewBook.vue';
 import editBook from './EditBook.vue';
 import deleteBook from './DeleteBook.vue';
+import Comunication from '../../Comunication.js'
 
 export default {
     components: {
@@ -64,27 +65,34 @@ export default {
         deleteBook: deleteBook
 
     },
-    
+
     data() {
         return {
             books: [],
             newBookMode: false
         }
     },
-    
+
     methods: {
         async getBooks() {
             const http = Axios.get('/api/book');
-            
+
             if (localStorage.getItem('books') != undefined) {
                 this.books = JSON.parse(localStorage.getItem('books'));
             }
-            
+
             this.books = await http.then((response) => {
                localStorage.setItem('books', JSON.stringify(response.data));
                return response.data;
-            });
-        }
+            }).catch((error) => {
+                if (error.response.statusCode = 401) {
+                    alert('Autorização negada');
+                    Comunication.$emit('isNotLogged');
+                    this.$root.$router.push('/user')
+                }
+            })
+        },
+
     },
 
     mounted() {

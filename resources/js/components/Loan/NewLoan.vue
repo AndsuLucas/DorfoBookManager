@@ -62,14 +62,14 @@ export default {
         filterBooks(event) {
             const pattern = event.target.value;
             const regex = new RegExp(pattern);
-            
+
             const filteredBooks = this.books.filter((book) => {
-                return book.title.trim().search(regex) != -1; 
+                return book.title.trim().search(regex) != -1;
             });
 
             if (filteredBooks[0] == undefined){
                 event.target.classList.toggle('dangerInput');
-                setTimeout(function(){event.target.classList.toggle('dangerInput')}, 2000);
+                setTimeout(() => {event.target.classList.toggle('dangerInput')}, 2000);
                 return;
             }
 
@@ -79,13 +79,12 @@ export default {
         },
 
         newLoan() {
-
             const invalidBookId = this.selectedBook.toString().lenght == 0 || typeof this.selectedBook != 'object';
             if (invalidBookId) {
                 Comunication.$on('toggleFeedback', 'Livro inválido.');
                 return;
             }
-            
+
             const invalidId = this.selectedBook.id == undefined || isNaN(this.selectedBook.id);
             if (invalidId) {
                 Comunication.$on('toggleFeedback', 'Livro inválido.');

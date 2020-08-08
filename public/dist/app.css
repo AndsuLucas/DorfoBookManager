@@ -4,7 +4,7 @@ input.dangerInput {
   transition: 1 s;
 }
 
-/*books*/
+/*Books*/
 
 .bookListPrincipalContainer {
   display: -webkit-box;
@@ -137,6 +137,101 @@ input.dangerInput {
   border: none;
   cursor: pointer;
   height: 25px;
+}
+
+/*Users*/
+
+.loginContainer {
+  max-width: 80%;
+  margin: 0 auto;
+  border: 2px solid black;
+  border-radius: 5px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  background-color: white;
+}
+
+.loginContainer .logoLogin h1 {
+  color: #142850;
+}
+
+.loginContainer form {
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.loginContainer form .formGroup {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  margin: 5%;
+}
+
+.loginContainer form .formGroup input,
+.loginContainer form .formGroup textarea {
+  border-radius: 3px;
+  outline: 0;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  border: 0.5px solid #27496d;
+  padding: 5px;
+  background-color: #ececec;
+  resize: none;
+}
+
+.loginContainer form .formGroup textarea:focus,
+.loginContainer form .formGroup input:focus {
+  background-color: white;
+  border: 1px solid #0c7b93;
+}
+
+.loginContainer form .formGroup label {
+  -ms-flex-item-align: start;
+      align-self: flex-start;
+  margin-bottom: 5px;
+  color: #142850;
+  font-weight: bold;
+}
+
+.loginContainer form .formGroup {
+  margin: 2%;
+}
+
+.loginContainer form .formGroup button {
+  color: #ececec;
+  background-color: #0c7b93;
+  border: none;
+  cursor: pointer;
+  height: 25px;
+}
+
+.loginContainer form button:hover {
+  opacity: 0.9;
+  -webkit-transition: ease-in 1s;
+  transition: ease-in 1s;
 }
 
 body {

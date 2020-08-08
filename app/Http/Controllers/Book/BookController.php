@@ -32,7 +32,7 @@ class BookController extends Controller
         try {
             $books = $this->bookModel->all();
             $jsonResponse = response()->json(
-                $books, 200, self::HEADERS, JSON_UNESCAPED_UNICODE
+                $books, 200, $this->getHeaders(), JSON_UNESCAPED_UNICODE
             );
 
             return $jsonResponse;
@@ -116,7 +116,6 @@ class BookController extends Controller
             return response()->json("Livro deletado com sucesso.", 200);
 
         } catch (\Throwable $th) {
-            dd($th->getMessage());
             return response()->json(self::SERVER_ERROR_MESSAGE, 500);
         }
     }

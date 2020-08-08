@@ -1,7 +1,9 @@
 <template>
     <div class="feedBackPanel" id="feedBackPanel">
         <div v-show="hasFeedback">
-            <p>{{feedbackContent}}</p>
+            <ul>
+                <li v-for="(feedback, index) in feedbackContent" :key="index">{{feedback}}</li>
+            </ul>
         </div>
     </div>
 </template>
@@ -11,18 +13,25 @@ export default {
     data() {
         return {
             hasFeedback: false,
-            feedbackContent: "",
+            feedbackContent: [],
         }
     },
     created() {
         Comunication.$on('toggleFeedback', (feedbackContent) => {
             this.hasFeedback = true;
-            this.feedbackContent = feedbackContent;
-            
-            setTimeout(()=> {
-                this.hasFeedback = false;
-            }, 4500);
+            this.feedbackContent[0] = feedbackContent;
         });
+
+        Comunication.$on('pushFeedBack', (feedbackContent) => {
+            this.hasFeedback = true;
+            this.feedbackContent.push(feedbackContent);
+        });
+
+        setTimeout(()=> {
+                this.hasFeedback = false
+                this.feedbackContent = [];
+        }, 6000);
+
     }
 }
 </script>
