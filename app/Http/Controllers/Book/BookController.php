@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers\Book;
 
@@ -7,14 +7,14 @@ use App\Book;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
-{      
+{
     /**
      * @var Book Model de livros.
      */
     protected $bookModel;
 
     const INPUT_FLTER = [
-        'title', 'loan_amount', 
+        'title', 'loan_amount',
         'remaining_amount', 'total'
     ];
 
@@ -22,40 +22,44 @@ class BookController extends Controller
     {
         $this->bookModel = $bookModel;
     }
-    
+
     /**
      * Retorna todos os livros da base de dados.
-     * @return string Json Listando os livros.
+     * @return \Illuminate\Http\JsonResponse
      */
     public function showAllBooks()
     {
         try {
             $books = $this->bookModel->all();
             $jsonResponse = response()->json(
-                $books, 200, self::HEADERS, JSON_UNESCAPED_UNICODE 
+                $books, 200, self::HEADERS, JSON_UNESCAPED_UNICODE
             );
-            
+
             return $jsonResponse;
-            
+
         } catch (\Throwable $th) {
             return response()->json(self::SERVER_ERROR_MESSAGE, 500);
         }
-        
+
     }
 
+    /**
+     * Cadastra um novo livro.
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function newBook(Request $request)
     {
         try {
             $newBook = $request->only(self::INPUT_FLTER);
             $newBookQueryResult = $this->bookModel->create($newBook);
-           
+
             // TODO: CRIAR UM VALIDADOR
             if (!$newBookQueryResult) {
-                return response()->json(self::CLIENT_ERROR_MESSAGE, 400);  
+                return response()->json(self::CLIENT_ERROR_MESSAGE, 404);
             }
-            
+
             $feedback = "Livro '{$request->title}' registrado com sucesso.";
-            
+
             return response()->json($feedback, 200);
 
         } catch(\Throwable $th) {
@@ -74,7 +78,7 @@ class BookController extends Controller
         try {
             // TODO: VALIDAÇÃO ID
             $book = $this->bookModel->find($id);
-            
+
             if (is_null($book)) {
                 return response()->json("Não existe nenhum livro com o id = {$request->id}", 404);
             }
@@ -87,7 +91,7 @@ class BookController extends Controller
             }
 
             return response()->json("Livro atualizado com sucesso.", 200);
-        
+
         } catch (\Throwable $th) {
             return response()->json(self::SERVER_ERROR_MESSAGE, 500);
         }
@@ -102,7 +106,7 @@ class BookController extends Controller
                 return response()->json("Não existe nenhum livro com o id = {$request->id}", 404);
             }
 
-            
+
             $deleteResult = $book->delete();
 
             if (!$deleteResult) {
@@ -110,7 +114,7 @@ class BookController extends Controller
             }
 
             return response()->json("Livro deletado com sucesso.", 200);
-        
+
         } catch (\Throwable $th) {
             dd($th->getMessage());
             return response()->json(self::SERVER_ERROR_MESSAGE, 500);
