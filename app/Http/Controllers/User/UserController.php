@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\User;
+
 class UserController extends Controller
 {
     const VALID_FIELDS = ['email', 'password', 'name'];
@@ -23,7 +24,6 @@ class UserController extends Controller
     /**
      * Faz o login do usuário e retorna o token utilizado
      * acessar os endpoints
-     *
      * @param Request $request
      * @return string
      */
@@ -66,7 +66,6 @@ class UserController extends Controller
     /**
      * Cadastra um novo usuário.
      * @param Request $request
-     *
      * @return string
      */
     public function register(Request $request) {
